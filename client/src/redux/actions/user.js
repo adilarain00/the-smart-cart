@@ -1,15 +1,16 @@
 import axios from 'axios';
-import API_BASE_URL from '../../config/api';
 
-// Action to get user orders
 export const getUser = () => async (dispatch) => {
   try {
     dispatch({
       type: 'getUserRequest',
     });
-    const { data } = await axios.get(`${API_BASE_URL}/users/profile`, {
-      withCredentials: true,
-    });
+    const { data } = await axios.get(
+      `${process.env.REACT_APP_BACKEND_URL}/users/profile`,
+      {
+        withCredentials: true,
+      }
+    );
 
     dispatch({
       type: 'getUserSuccess',
@@ -23,7 +24,6 @@ export const getUser = () => async (dispatch) => {
   }
 };
 
-// Action to get user orders
 export const getSeller = () => async (dispatch) => {
   try {
     dispatch({
@@ -47,7 +47,6 @@ export const getSeller = () => async (dispatch) => {
   }
 };
 
-// Action to update user information
 export const updateUserInfo =
   (name, email, phoneNumber, password) => async (dispatch) => {
     try {
@@ -83,7 +82,6 @@ export const updateUserInfo =
     }
   };
 
-// Action to update user address
 export const updateUserAddress =
   (country, city, address1, address2, zipCode, addressType) =>
   async (dispatch) => {
@@ -121,7 +119,6 @@ export const updateUserAddress =
     }
   };
 
-// Action to delete user address
 export const deleteUserAddress = (id) => async (dispatch) => {
   try {
     dispatch({
@@ -148,7 +145,6 @@ export const deleteUserAddress = (id) => async (dispatch) => {
   }
 };
 
-// Action to get user orders
 export const getAllUsersByAdmin = () => async (dispatch) => {
   try {
     dispatch({
