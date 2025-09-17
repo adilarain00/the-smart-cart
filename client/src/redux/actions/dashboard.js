@@ -11,7 +11,7 @@ export const getDashboardStats =
       });
 
       const { data } = await axios.get(
-        `${API_BASE_URL}/api/dashboard/stats?period=${period}`,
+        `${API_BASE_URL}/dashboard/stats?period=${period}`,
         {
           withCredentials: true,
         }
@@ -37,7 +37,7 @@ export const getRealTimeUpdates = () => async (dispatch) => {
       type: 'REALTIME_UPDATES_REQUEST',
     });
 
-    const { data } = await axios.get(`${API_BASE_URL}/api/dashboard/realtime`, {
+    const { data } = await axios.get(`${API_BASE_URL}/dashboard/realtime`, {
       withCredentials: true,
     });
 
