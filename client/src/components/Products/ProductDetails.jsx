@@ -1,0 +1,438 @@
+import { useEffect, useState } from 'react';
+import { toast } from 'react-toastify';
+import { Link, useNavigate } from 'react-router-dom';
+import { addToCart } from '../../redux/actions/cart';
+import { useDispatch, useSelector } from 'react-redux';
+import { getAllSellerProducts } from '../../redux/actions/product';
+import { productPlaceholderImg, profilePlaceholderImg } from '../../assets';
+import {
+  AiFillHeart,
+  AiOutlineHeart,
+  AiOutlineMessage,
+  AiOutlineShoppingCart,
+} from 'react-icons/ai';
+import {
+  addToWishlist,
+  removeFromWishlist,
+} from '../../redux/actions/wishlist';
+import Ratings from './Ratings';
+import axios from 'axios';
+
+const ProductDetails = ({ data }) => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const [count, setCount] = useState(1);
+  const [select, setSelect] = useState(0);
+  const [click, setClick] = useState(false);
+  const { cart } = useSelector((state) => state.cart);
+  const { wishlist } = useSelector((state) => state.wishlist);
+  const { products } = useSelector((state) => state.products);
+  const { isAuthenticated, user } = useSelector((state) => state.user);
+  const [imgErrorArr, setImgErrorArr] = useState([]);
+
+  const allImagesError =
+    data?.images &&
+    data.images.length > 0 &&
+    imgErrorArr.length === data.images.length;
+
+  useEffect(() => {
+    dispatch(getAllSellerProducts(data && data?.seller._id));
+    if (wishlist && wishlist.find((i) => i._id === data?._id)) {
+      setClick(true);
+    } else {
+      setClick(false);
+    }
+  }, [data, dispatch, wishlist]);
+
+  const incrementCount = () => {
+    setCount(count + 1);
+  };
+
+  const decrementCount = () => {
+    if (count > 1) {
+      setCount(count - 1);
+    }
+  };
+
+  const removeFromWishlistHandler = (data) => {
+    setClick(!click);
+    dispatch(removeFromWishlist(data));
+  };
+
+  const addToWishlistHandler = (data) => {
+    setClick(!click);
+    dispatch(addToWishlist(data));
+  };
+
+  const addToCartHandler = (id) => {
+    const isItemExists = cart && cart.find((i) => i._id === id);
+    if (isItemExists) {
+      toast.error('Item already in cart!');
+    } else {
+      if (data.stock < 1) {
+        toast.error('Product stock limited!');
+      } else {
+        const cartData = { ...data, qty: count };
+        dispatch(addToCart(cartData));
+        toast.success('Item added to cart successfully!');
+      }
+    }
+  };
+
+  const handleMessageSubmit = async () => {
+    if (isAuthenticated) {
+      const userId = user._id;
+      const sellerId = data.seller._id;
+      const groupTitle = [userId, sellerId].sort().join('_');
+
+      await axios
+        .post(
+          `${process.env.REACT_APP_BACKEND_URL}/conversations/new-conversation`,
+          {
+            groupTitle,
+            userId,
+            sellerId,
+          }
+        )
+        .then((res) => {
+          navigate(`/user/inbox?${res.data.conversation._id}`);
+        })
+        .catch((error) => {
+          toast.error(error.response.data.message);
+        });
+    } else {
+      toast.error('Please login to send a message!');
+      navigate('/user/login');
+    }
+  };
+
+  const totalReviewsLength =
+    products &&
+    products.reduce((acc, product) => acc + product.reviews.length, 0);
+
+  const totalRatings =
+    products &&
+    products.reduce(
+      (acc, product) =>
+        acc + product.reviews.reduce((sum, review) => sum + review.rating, 0),
+      0
+    );
+
+  const avg = totalRatings / totalReviewsLength || 0;
+  const averageRating = avg.toFixed(1);
+
+  return (
+    <div className='w-full flex flex-col items-center py-8 min-h-screen'>
+      {data ? (
+        <>
+          <div className='w-11/12 bg-white rounded-lg shadow-[0_0_20px_rgba(0,0,0,0.05)] p-6 flex flex-col md:flex-row gap-10 border border-gray-100'>
+            <div className='flex-1 flex flex-col items-center'>
+              <div className='w-full flex justify-center mb-4'>
+                {allImagesError ? (
+                  <img
+                    src={productPlaceholderImg}
+                    alt='No images'
+                    className='w-[90%] h-[370px] object-contain rounded-lg bg-gray-50 shadow'
+                  />
+                ) : (
+                  <img
+                    src={`${data && data.images[select]?.url}`}
+                    alt={data?.name}
+                    className='w-[90%] h-[370px] rounded-lg bg-gray-50 shadow'
+                    onError={() => {
+                      setImgErrorArr((prev) =>
+                        prev.includes(select) ? prev : [...prev, select]
+                      );
+                    }}
+                  />
+                )}
+              </div>
+              <div className='flex gap-2 mb-4'>
+                {data.images &&
+                  !allImagesError &&
+                  data.images.map((i, index) =>
+                    imgErrorArr.includes(index) ? null : (
+                      <img
+                        key={index}
+                        src={`${i?.url}`}
+                        alt={data?.name}
+                        className={`w-18 h-12 object-contain rounded-lg shadow-sm border-2 cursor-pointer transition-all duration-200 ${
+                          select === index
+                            ? 'border-gray-500 shadow-lg scale-105'
+                            : 'border-gray-200 hover:border-gray-300'
+                        }`}
+                        onClick={() => setSelect(index)}
+                        onError={() => {
+                          setImgErrorArr((prev) =>
+                            prev.includes(index) ? prev : [...prev, index]
+                          );
+                        }}
+                      />
+                    )
+                  )}
+              </div>
+              <Link
+                to={`/seller/profile/preview/${data?.seller._id}`}
+                className='flex items-center gap-3 mb-4 hover:underline'
+              >
+                <img
+                  src={`${data?.seller?.avatar?.url}`}
+                  alt={data?.seller?.name}
+                  className='w-12 h-12 rounded-full border-2 border-gray-400 object-cover'
+                  onError={(e) => {
+                    e.target.onerror = null;
+                    e.target.src = profilePlaceholderImg;
+                  }}
+                />
+                <div>
+                  <h3 className='font-semibold text-blue-500'>
+                    {data.seller.name}
+                  </h3>
+                  <h5 className='text-xs text-gray-500'>
+                    {' '}
+                    ({averageRating}/5) Ratings
+                  </h5>
+                </div>
+              </Link>
+              <button
+                className='w-full flex items-center justify-center gap-2 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 hover:text-gray-100 hover:bg-gray-300  text-white font-semibold rounded-lg py-2 shadow-sm transition'
+                onClick={handleMessageSubmit}
+              >
+                Send Message <AiOutlineMessage size={20} />
+              </button>
+            </div>
+
+            <div className='flex-1 flex flex-col gap-4'>
+              <h1 className='text-2xl font-bold text-gray-800 mb-2 leading-tight'>
+                {data.name}
+              </h1>
+              <p className='text-gray-700 mb-2'>{data.description}</p>
+              <div className='flex items-center gap-4 mb-2'>
+                <h4 className='text-2xl font-bold text-blue-500'>
+                  ${data.discountPrice}
+                </h4>
+                {data.originalPrice &&
+                  data.originalPrice !== data.discountPrice && (
+                    <h3 className='text-lg text-gray-400 line-through'>
+                      ${data.originalPrice}
+                    </h3>
+                  )}
+              </div>
+              <div className='flex items-center gap-6 mt-4'>
+                <div className='flex items-center border rounded-lg overflow-hidden bg-white shadow-sm'>
+                  <button
+                    className='bg-gray-100 text-gray-700 px-3 py-2 hover:bg-blue-100 transition'
+                    onClick={decrementCount}
+                  >
+                    -
+                  </button>
+                  <span className='px-5 py-2 text-base font-semibold bg-white'>
+                    {count}
+                  </span>
+                  <button
+                    className='bg-gray-100 text-gray-700 px-3 py-2 hover:bg-blue-100 transition'
+                    onClick={incrementCount}
+                  >
+                    +
+                  </button>
+                </div>
+                <button
+                  className='bg-white rounded-lgll p-2 shadow hover:bg-blue-100 transition border border-gray-100'
+                  onClick={() =>
+                    click
+                      ? removeFromWishlistHandler(data)
+                      : addToWishlistHandler(data)
+                  }
+                  aria-label={
+                    click ? 'Remove from wishlist' : 'Add to wishlist'
+                  }
+                >
+                  {click ? (
+                    <AiFillHeart size={26} color='red' />
+                  ) : (
+                    <AiOutlineHeart size={26} color='blue' />
+                  )}
+                </button>
+              </div>
+              <button
+                className='mt-6 flex items-center justify-center gap-2  bg-gradient-to-r from-blue-500 to-purple-600  hover:from-blue-600 hover:to-purple-700 hover:text-gray-100 text-white font-semibold rounded-lg py-3 transition'
+                onClick={() => addToCartHandler(data._id)}
+              >
+                Add to cart <AiOutlineShoppingCart size={22} />
+              </button>
+              <div className='flex items-center mt-4'>
+                <Ratings rating={data?.ratings} />
+                <span className='ml-2 text-xs font-semibold px-2 py-1 rounded-lgll bg-green-50 text-green-600 shadow'>
+                  {data.soldOut} sold
+                </span>
+              </div>
+            </div>
+          </div>
+          <div className='w-11/12 mt-8'>
+            <ProductDetailsInfo
+              data={data}
+              products={products}
+              totalReviewsLength={totalReviewsLength}
+              averageRating={averageRating}
+            />
+          </div>
+        </>
+      ) : null}
+    </div>
+  );
+};
+
+const ProductDetailsInfo = ({
+  data,
+  products,
+  totalReviewsLength,
+  averageRating,
+}) => {
+  const [active, setActive] = useState(1);
+
+  return (
+    <div className='bg-white px-3 800px:px-10 py-6 rounded-lg shadow-[0_0_20px_rgba(0,0,0,0.05)] border border-gray-100'>
+      <div className='w-full flex flex-wrap gap-4 border-b pb-2'>
+        <div className='relative'>
+          <h5
+            className={`text-[18px] px-1 leading-5 font-[600] cursor-pointer 800px:text-[20px] transition-colors ${
+              active === 1 ? 'text-blue-500' : 'text-gray-700'
+            }`}
+            onClick={() => setActive(1)}
+          >
+            Product Details
+          </h5>
+          {active === 1 && (
+            <div className='h-1 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 hover:text-gray-100 rounded-lgw-full mt-1' />
+          )}
+        </div>
+        <div className='relative'>
+          <h5
+            className={`text-[18px] px-1 leading-5 font-[600] cursor-pointer 800px:text-[20px] transition-colors ${
+              active === 2 ? 'text-blue-500' : 'text-gray-700'
+            }`}
+            onClick={() => setActive(2)}
+          >
+            Product Reviews
+          </h5>
+          {active === 2 && (
+            <div className='h-1 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 hover:text-gray-100 rounded-lgw-full mt-1' />
+          )}
+        </div>
+        <div className='relative'>
+          <h5
+            className={`text-[18px] px-1 leading-5 font-[600] cursor-pointer 800px:text-[20px] transition-colors ${
+              active === 3 ? 'text-blue-500' : 'text-gray-700'
+            }`}
+            onClick={() => setActive(3)}
+          >
+            Seller Information
+          </h5>
+          {active === 3 && (
+            <div className='h-1 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 hover:text-gray-100 rounded-lgw-full mt-1' />
+          )}
+        </div>
+      </div>
+      {active === 1 && (
+        <p className='py-4 text-[18px] leading-8 whitespace-pre-line text-gray-700'>
+          {data.description}
+        </p>
+      )}
+      {active === 2 && (
+        <div className='w-full min-h-[40vh] flex flex-col items-center py-3 overflow-y-scroll'>
+          {data &&
+            data.reviews &&
+            data.reviews.map((item, index) => (
+              <div
+                className='w-full flex my-2 bg-gray-50 rounded-lg p-3 shadow-sm'
+                key={index}
+              >
+                <img
+                  src={`${item.user.avatar?.url}`}
+                  alt=''
+                  className='w-[50px] h-[50px] rounded-full border-2 border-gray-200'
+                  onError={(e) => {
+                    e.target.onerror = null;
+                    e.target.src = profilePlaceholderImg;
+                  }}
+                />
+                <div className='pl-2 '>
+                  <div className='w-full flex items-center'>
+                    <h1 className='font-[500] mr-3'>{item.user.name}</h1>
+                    <Ratings rating={item.rating} />
+                  </div>
+                  <p className='text-gray-700'>{item.comment}</p>
+                </div>
+              </div>
+            ))}
+
+          <div className='w-full flex justify-center'>
+            {data && (!data.reviews || data.reviews.length === 0) && (
+              <h5 className='text-gray-500'>
+                No Reviews have for this product!
+              </h5>
+            )}
+          </div>
+        </div>
+      )}
+
+      {active === 3 && (
+        <div className='w-full block 800px:flex p-5'>
+          <div className='w-full 800px:w-[50%]'>
+            <Link to={`/seller/profile/preview/${data.seller._id}`}>
+              <div className='flex items-center'>
+                <img
+                  src={`${data?.seller?.avatar?.url}`}
+                  className='w-[50px] h-[50px] rounded-full border-2 border-gray-400'
+                  alt={data?.seller?.name || 'Seller'}
+                  onError={(e) => {
+                    e.target.onerror = null;
+                    e.target.src = profilePlaceholderImg;
+                  }}
+                />
+                <div className='pl-3'>
+                  <h3 className='font-semibold text-blue-500'>
+                    {data.seller.name}
+                  </h3>
+                  <h5 className='pb-2 text-[15px] text-gray-500'>
+                    ({averageRating}/5) Ratings
+                  </h5>
+                </div>
+              </div>
+            </Link>
+            <p className='pt-2 text-gray-700'>{data.seller.description}</p>
+          </div>
+          <div className='w-full 800px:w-[50%] mt-5 800px:mt-0 800px:flex flex-col items-end'>
+            <div className='text-left'>
+              <h5 className='font-[600]'>
+                Joined on:{' '}
+                <span className='font-[500]'>
+                  {data.seller?.createdAt?.slice(0, 10)}
+                </span>
+              </h5>
+              <h5 className='font-[600] pt-3'>
+                Total Products:{' '}
+                <span className='font-[500]'>
+                  {products && products.length}
+                </span>
+              </h5>
+              <h5 className='font-[600] pt-3'>
+                Total Reviews:
+                <span className='font-[500]'>{totalReviewsLength}</span>
+              </h5>
+              <Link to={`/seller/profile/preview/${data.seller._id}`}>
+                <div className='rounded-lgpx] h-[39.5px] mt-3 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 hover:text-gray-100 flex items-center justify-center px-4'>
+                  <h4 className='text-white font-semibold'>
+                    Visit Seller Profile
+                  </h4>
+                </div>
+              </Link>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default ProductDetails;
