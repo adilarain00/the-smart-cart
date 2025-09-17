@@ -1,4 +1,5 @@
 import axios from 'axios';
+import API_BASE_URL from '../../config/api';
 
 // Action to get user orders
 export const getUser = () => async (dispatch) => {
@@ -6,12 +7,9 @@ export const getUser = () => async (dispatch) => {
     dispatch({
       type: 'getUserRequest',
     });
-    const { data } = await axios.get(
-      `${process.env.REACT_APP_BACKEND_URL}/users/profile`,
-      {
-        withCredentials: true,
-      }
-    );
+    const { data } = await axios.get(`${API_BASE_URL}/users/profile`, {
+      withCredentials: true,
+    });
 
     dispatch({
       type: 'getUserSuccess',
