@@ -12,7 +12,8 @@ const createActivationToken = (user) => {
   });
 };
 
-// Controller for user registration
+// Controller for user registration, authentication, profile, and admin actions
+// Register a new user and send activation email
 exports.registerUser = catchAsyncErrors(async (req, res, next) => {
   try {
     const { name, email, password, avatar } = req.body;
@@ -41,24 +42,32 @@ exports.registerUser = catchAsyncErrors(async (req, res, next) => {
     }
 
     const user = {
-      name,
-      email,
-      password,
+      name: name,
+      email: email,
+      password: password,
       avatar: avatarObj,
     };
 
-    // 🚫 Mailer still disabled for now
-    // const activationToken = createActivationToken(user);
-    // const activationUrl = `${process.env.FRONTEND_URL}/user/activation/${activationToken}`;
-    // await sendMail(...);
+    const activationToken = createActivationToken(user);
+    const activationUrl = `${process.env.FRONTEND_URL}/user/activation/${activationToken}`;
 
-    res.status(201).json({
-      success: true,
-      message: `User created successfully (Mailer disabled, Cloudinary enabled).`,
-      user,
-    });
+    try {
+      await sendMail({
+        email: user.email,
+        subject: 'Activate your account',
+        name: user.name,
+        activationUrl,
+        message: `Hello ${user.name}, please click on the link to activate your account: ${activationUrl}`,
+      });
+      res.status(201).json({
+        success: true,
+        message: `Please check your email:- ${user.email} to activate your account!`,
+      });
+    } catch (error) {
+      return next(new errorHandler(error.message), 500);
+    }
   } catch (error) {
-    console.log('Register Error:', error);
+    console.log(error);
     return next(new errorHandler(error.message), 400);
   }
 });
