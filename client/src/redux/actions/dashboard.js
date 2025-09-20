@@ -1,5 +1,4 @@
 import axios from 'axios';
-import API_BASE_URL from '../../config/api';
 
 // Get dashboard statistics
 export const getDashboardStats =
@@ -11,7 +10,7 @@ export const getDashboardStats =
       });
 
       const { data } = await axios.get(
-        `${API_BASE_URL}/dashboard/stats?period=${period}`,
+        `${process.env.REACT_APP_BACKEND_URL}/dashboard/stats?period=${period}`,
         {
           withCredentials: true,
         }
@@ -37,9 +36,12 @@ export const getRealTimeUpdates = () => async (dispatch) => {
       type: 'REALTIME_UPDATES_REQUEST',
     });
 
-    const { data } = await axios.get(`${API_BASE_URL}/dashboard/realtime`, {
-      withCredentials: true,
-    });
+    const { data } = await axios.get(
+      `${process.env.REACT_APP_BACKEND_URL}/dashboard/realtime`,
+      {
+        withCredentials: true,
+      }
+    );
 
     dispatch({
       type: 'REALTIME_UPDATES_SUCCESS',

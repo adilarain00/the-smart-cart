@@ -1,12 +1,13 @@
 import axios from 'axios';
-import API_BASE_URL from '../../config/api';
 
 // Get visitor count
 export const getVisitorCount = () => async (dispatch) => {
   try {
     dispatch({ type: 'GET_VISITOR_COUNT_REQUEST' });
 
-    const { data } = await axios.get(`${API_BASE_URL}/visitors/count`);
+    const { data } = await axios.get(
+      `${process.env.REACT_APP_BACKEND_URL}/visitors/count`
+    );
 
     dispatch({ type: 'GET_VISITOR_COUNT_SUCCESS', payload: data.count });
   } catch (error) {
@@ -20,7 +21,7 @@ export const getVisitorCount = () => async (dispatch) => {
 // Add visitor
 export const addVisitor = () => async () => {
   try {
-    await axios.post(`${API_BASE_URL}/visitors/add`);
+    await axios.post(`${process.env.REACT_APP_BACKEND_URL}/visitors/add`);
   } catch (error) {
     // ignore tracking errors
   }
