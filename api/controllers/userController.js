@@ -13,10 +13,10 @@ const createActivationToken = (user) => {
 };
 
 // Controller for user registration, authentication, profile, and admin actions
-// Register a new user and send activation email
+// Register a new user (mailer & cloudinary temporarily disabled)
 exports.registerUser = catchAsyncErrors(async (req, res, next) => {
   try {
-    const { name, email, password, avatar } = req.body;
+    const { name, email, password } = req.body;
 
     const userEmail = await User.findOne({ email });
     if (userEmail) {
@@ -25,47 +25,37 @@ exports.registerUser = catchAsyncErrors(async (req, res, next) => {
       );
     }
 
-    let avatarObj;
-    if (avatar) {
-      const myCloud = await cloudinary.v2.uploader.upload(avatar, {
-        folder: 'avatars',
-      });
-      avatarObj = {
-        public_id: myCloud.public_id,
-        url: myCloud.secure_url,
-      };
-    } else {
-      avatarObj = {
-        public_id: 'default_avatar',
-        url: 'https://media.istockphoto.com/id/1337144146/vector/default-avatar-profile-icon-vector.jpg?s=612x612&w=0&k=20&c=BIbFwuv7FxTWvh5S3vB6bkT0Qv8Vn8N5Ffseq84ClGI=',
-      };
-    }
+    // 🚫 Cloudinary disabled for now
+    const avatarObj = {
+      public_id: 'default_avatar',
+      url: 'https://media.istockphoto.com/id/1337144146/vector/default-avatar-profile-icon-vector.jpg?s=612x612&w=0&k=20&c=BIbFwuv7FxTWvh5S3vB6bkT0Qv8Vn8N5Ffseq84ClGI=',
+    };
 
     const user = {
-      name: name,
-      email: email,
-      password: password,
+      name,
+      email,
+      password,
       avatar: avatarObj,
     };
 
-    const activationToken = createActivationToken(user);
-    const activationUrl = `${process.env.FRONTEND_URL}/user/activation/${activationToken}`;
+    // 🚫 Mailer disabled for now
+    // const activationToken = createActivationToken(user);
+    // const activationUrl = `${process.env.FRONTEND_URL}/user/activation/${activationToken}`;
 
-    try {
-      await sendMail({
-        email: user.email,
-        subject: 'Activate your account',
-        name: user.name,
-        activationUrl,
-        message: `Hello ${user.name}, please click on the link to activate your account: ${activationUrl}`,
-      });
-      res.status(201).json({
-        success: true,
-        message: `Please check your email:- ${user.email} to activate your account!`,
-      });
-    } catch (error) {
-      return next(new errorHandler(error.message), 500);
-    }
+    // await sendMail({
+    //   email: user.email,
+    //   subject: 'Activate your account',
+    //   name: user.name,
+    //   activationUrl,
+    //   message: `Hello ${user.name}, please click on the link to activate your account: ${activationUrl}`,
+    // });
+
+    // ✅ Just return success
+    res.status(201).json({
+      success: true,
+      message: `User created successfully. (Mailer & Cloudinary disabled for testing)`,
+      user,
+    });
   } catch (error) {
     console.log(error);
     return next(new errorHandler(error.message), 400);
