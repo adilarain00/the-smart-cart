@@ -6,7 +6,7 @@ dotenv.config();
 
 const colors = require('colors');
 const connectDB = require('./db/db');
-const cloudinary = require('cloudinary');
+const cloudinary = require('cloudinary').v2;
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const userRoutes = require('./routes/userRoutes');
