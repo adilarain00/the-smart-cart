@@ -12,8 +12,6 @@ const createActivationToken = (user) => {
   });
 };
 
-// Controller for user registration, authentication, profile, and admin actions
-// Register a new user and send activation email
 exports.registerUser = catchAsyncErrors(async (req, res, next) => {
   try {
     const { name, email, password, avatar } = req.body;
@@ -42,34 +40,36 @@ exports.registerUser = catchAsyncErrors(async (req, res, next) => {
     }
 
     const user = {
-      name,
-      email,
-      password,
+      name: name,
+      email: email,
+      password: password,
       avatar: avatarObj,
     };
 
     const activationToken = createActivationToken(user);
     const activationUrl = `${process.env.FRONTEND_URL}/user/activation/${activationToken}`;
 
-    await sendMail({
-      email: user.email,
-      subject: 'Activate your account',
-      name: user.name,
-      activationUrl,
-      message: `Hello ${user.name}, please click on the link to activate your account: ${activationUrl}`,
-    });
-
-    res.status(201).json({
-      success: true,
-      message: `Please check your email: ${user.email} to activate your account!`,
-    });
+    try {
+      await sendMail({
+        email: user.email,
+        subject: 'Activate your account',
+        name: user.name,
+        activationUrl,
+        message: `Hello ${user.name}, please click on the link to activate your account: ${activationUrl}`,
+      });
+      res.status(201).json({
+        success: true,
+        message: `Please check your email:- ${user.email} to activate your account!`,
+      });
+    } catch (error) {
+      return next(new errorHandler(error.message), 500);
+    }
   } catch (error) {
-    console.log('❌ Register error:', error);
-    return next(new errorHandler(error.message, 500));
+    console.log(error);
+    return next(new errorHandler(error.message), 400);
   }
 });
 
-// Activate user account using activation token
 exports.activateUser = catchAsyncErrors(async (req, res, next) => {
   try {
     const { activation_token } = req.body;
@@ -100,7 +100,6 @@ exports.activateUser = catchAsyncErrors(async (req, res, next) => {
   }
 });
 
-// User login and token generation
 exports.loginUser = catchAsyncErrors(async (req, res, next) => {
   try {
     const { email, password } = req.body;
@@ -125,7 +124,6 @@ exports.loginUser = catchAsyncErrors(async (req, res, next) => {
   }
 });
 
-// Get user profile by token
 exports.getUserProfile = catchAsyncErrors(async (req, res, next) => {
   try {
     const user = await User.findById(req.user.id);
@@ -141,7 +139,6 @@ exports.getUserProfile = catchAsyncErrors(async (req, res, next) => {
   }
 });
 
-// Logout user (clear token cookie)
 exports.logoutUser = catchAsyncErrors(async (req, res, next) => {
   try {
     res.cookie('token', null, {
@@ -159,7 +156,6 @@ exports.logoutUser = catchAsyncErrors(async (req, res, next) => {
   }
 });
 
-// Update user info (requires password validation)
 exports.updateUserInfo = catchAsyncErrors(async (req, res, next) => {
   try {
     const { email, password, phoneNumber, name } = req.body;
@@ -194,7 +190,6 @@ exports.updateUserInfo = catchAsyncErrors(async (req, res, next) => {
   }
 });
 
-// Update user avatar (with Cloudinary image upload)
 exports.updateUserAvatar = catchAsyncErrors(async (req, res, next) => {
   try {
     let existsUser = await User.findById(req.user.id);
@@ -227,7 +222,6 @@ exports.updateUserAvatar = catchAsyncErrors(async (req, res, next) => {
   }
 });
 
-// Add or update user addresses
 exports.updateUserAddresses = catchAsyncErrors(async (req, res, next) => {
   try {
     const user = await User.findById(req.user.id);
@@ -261,7 +255,6 @@ exports.updateUserAddresses = catchAsyncErrors(async (req, res, next) => {
   }
 });
 
-// Delete a user address by ID
 exports.deleteUserAddress = catchAsyncErrors(async (req, res, next) => {
   try {
     const userId = req.user._id;
@@ -282,7 +275,6 @@ exports.deleteUserAddress = catchAsyncErrors(async (req, res, next) => {
   }
 });
 
-// Update user password with validation
 exports.updateUserPassword = catchAsyncErrors(async (req, res, next) => {
   try {
     const user = await User.findById(req.user.id).select('+password');
@@ -321,7 +313,6 @@ exports.updateUserPassword = catchAsyncErrors(async (req, res, next) => {
   }
 });
 
-// Get user info by ID
 exports.getUserInfo = catchAsyncErrors(async (req, res, next) => {
   try {
     const user = await User.findById(req.params.id);
@@ -335,7 +326,6 @@ exports.getUserInfo = catchAsyncErrors(async (req, res, next) => {
   }
 });
 
-// Admin: get all users
 exports.getAllUsersByAdmin = catchAsyncErrors(async (req, res, next) => {
   try {
     const users = await User.find().sort({
@@ -350,7 +340,6 @@ exports.getAllUsersByAdmin = catchAsyncErrors(async (req, res, next) => {
   }
 });
 
-// Admin: delete a user by ID
 exports.deleteUserByAdmin = catchAsyncErrors(async (req, res, next) => {
   try {
     const user = await User.findById(req.params.id);
