@@ -80,7 +80,7 @@ const SellerRegister = () => {
   return (
     <div className='min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8'>
       <div className='mt-8 sm:mx-auto sm:w-full sm:max-w-[35rem]'>
-        <div className='bg-white py-8 px-4 shadow-[0_0_20px_rgba(0,0,0,0.05)] sm:rounded-sm sm:px-10'>
+        <div className='bg-white py-8 px-4 shadow-[0_0_20px_rgba(0,0,0,0.05)] sm:rounded-lg sm:px-10'>
           <form className='space-y-6' onSubmit={handleSubmit}>
             <div>
               <label
@@ -96,7 +96,7 @@ const SellerRegister = () => {
                   required
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  className='block w-full px-4 py-2 border border-gray-300 rounded-sm shadow-sm placeholder-gray-500 focus:outline-none focus:ring-orange-500 focus:border-orange-500 text-lg'
+                  className='block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm placeholder-gray-500 focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-lg'
                 />
               </div>
             </div>
@@ -115,7 +115,7 @@ const SellerRegister = () => {
                   required
                   value={phoneNumber}
                   onChange={(e) => setPhoneNumber(e.target.value)}
-                  className='block w-full px-4 py-2 border border-gray-300 rounded-sm shadow-sm placeholder-gray-500 focus:outline-none focus:ring-orange-500 focus:border-orange-500 text-lg'
+                  className='block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm placeholder-gray-500 focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-lg'
                 />
               </div>
             </div>
@@ -135,7 +135,7 @@ const SellerRegister = () => {
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className='block w-full px-4 py-2 border border-gray-300 rounded-sm shadow-sm placeholder-gray-500 focus:outline-none focus:ring-orange-500 focus:border-orange-500 text-lg'
+                  className='block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm placeholder-gray-500 focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-lg'
                 />
               </div>
             </div>
@@ -154,7 +154,7 @@ const SellerRegister = () => {
                   required
                   value={address}
                   onChange={(e) => setAddress(e.target.value)}
-                  className='block w-full px-4 py-2 border border-gray-300 rounded-sm shadow-sm placeholder-gray-500 focus:outline-none focus:ring-orange-500 focus:border-orange-500 text-lg'
+                  className='block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm placeholder-gray-500 focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-lg'
                 />
               </div>
             </div>
@@ -173,7 +173,7 @@ const SellerRegister = () => {
                   required
                   value={zipCode}
                   onChange={(e) => setZipCode(e.target.value)}
-                  className='block w-full px-4 py-2 border border-gray-300 rounded-sm shadow-sm placeholder-gray-500 focus:outline-none focus:ring-orange-500 focus:border-orange-500 text-lg'
+                  className='block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm placeholder-gray-500 focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-lg'
                 />
               </div>
             </div>
@@ -193,7 +193,7 @@ const SellerRegister = () => {
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className='block w-full px-4 py-2 border border-gray-300 rounded-sm shadow-sm placeholder-gray-500 focus:outline-none focus:ring-orange-500 focus:border-orange-500 text-lg'
+                  className='block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm placeholder-gray-500 focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-lg'
                 />
                 {visible ? (
                   <AiOutlineEye
@@ -230,7 +230,7 @@ const SellerRegister = () => {
                 </span>
                 <label
                   htmlFor='file-input'
-                  className='ml-5 flex items-center justify-center px-4 py-2 border border-gray-300 rounded-sm shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50'
+                  className='ml-5 flex items-center justify-center px-4 py-2 border border-gray-300 rounded-lg shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50'
                 >
                   <span>Upload a file</span>
                   <input
@@ -247,7 +247,7 @@ const SellerRegister = () => {
             <div>
               <button
                 type='submit'
-                className={`w-full py-2 bg-orange-500 hover:bg-gray-800 text-white rounded-sm font-semibold tracking-wide transition flex items-center justify-center`}
+                className={`w-full py-2 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 hover:text-gray-100 text-white rounded-lg font-semibold tracking-wide transition flex items-center justify-center`}
               >
                 Submit
               </button>
@@ -256,7 +256,7 @@ const SellerRegister = () => {
             <div className='flex gap-4 mt-4'>
               <Link
                 to='/seller/login'
-                className='w-full py-2 bg-gray-300 text-black text-base text-center rounded-sm font-semibold hover:bg-gray-800 hover:text-white transition'
+                className='w-full py-2 bg-gray-300 text-black text-base text-center rounded-lg font-semibold hover:from-blue-600 hover:to-purple-700 hover:text-white transition'
               >
                 Already have a registered shop?
               </Link>
