@@ -1,25 +1,13 @@
-// Utility to send styled emails (activation, notifications) using Brevo SMTP + Nodemailer
-const nodemailer = require('nodemailer');
+// utils/sendMail.js
+const SibApiV3Sdk = require('sib-api-v3-sdk');
 
-const transporter = nodemailer.createTransport({
-  host: process.env.BREVO_SMTP_HOST || 'smtp-relay.brevo.com',
-  port: Number(process.env.BREVO_SMTP_PORT) || 587,
-  secure: Number(process.env.BREVO_SMTP_PORT) === 465, // true if port 465, else false
-  secure: false,
-  auth: {
-    user: process.env.BREVO_SMTP_USER, // Brevo SMTP login (NOT the from email)
-    pass: process.env.BREVO_SMTP_PASS, // Brevo SMTP key
-  },
-  requireTLS: true,
-});
+const client = SibApiV3Sdk.ApiClient.instance;
+const apiKey = client.authentications['api-key'];
+apiKey.apiKey = process.env.BREVO_API_KEY;
 
-// optional debug log
-transporter.verify((err, success) => {
-  if (err) console.error('Brevo SMTP verify failed:', err);
-  else console.log('Brevo SMTP ready to send');
-});
+const tranEmailApi = new SibApiV3Sdk.TransactionalEmailsApi();
 
-const sendMail = async (options) => {
+async function sendMail(options) {
   const isActivation = !!options.activationUrl;
   const isSeller =
     options.subject && options.subject.toLowerCase().includes('seller');
@@ -35,65 +23,47 @@ const sendMail = async (options) => {
       <div style="font-family: Arial, sans-serif; background: #f9fafb; padding: 40px 0;">
         <div style="max-width: 480px; margin: auto; background: #fff; border-radius: 12px; box-shadow: 0 2px 12px #0001; overflow: hidden;">
           <div style="background: ${mainGradient}; padding: 28px 0; text-align: center;">
-            <h1 style="color: #fff; margin: 0; font-size: 2rem; letter-spacing: 1px;">The Smart Cart</h1>
+            <h1 style="color: #fff; margin: 0; font-size: 2rem;">The Smart Cart</h1>
           </div>
           <div style="padding: 32px;">
-            <h2 style="color: #3b82f6; margin-top: 0; font-size: 1.3rem;">Activate your ${entityLabelLower}</h2>
-            <p style="color: #374151; font-size: 1rem;">Hello <b>${
-              options.name || 'there'
-            }</b>,</p>
-            <p style="color: #374151; font-size: 1rem;">Welcome to our marketplace! 🎉 Click below to activate your ${entityLabelLower}.</p>
+            <h2 style="color: #3b82f6; margin-top: 0;">Activate your ${entityLabelLower}</h2>
+            <p>Hello <b>${options.name || 'there'}</b>,</p>
+            <p>Welcome to our marketplace 🎉 Click below to activate your ${entityLabelLower}:</p>
             <div style="text-align: center; margin: 32px 0;">
               <a href="${options.activationUrl}"
-                style="background: ${buttonGradient}; color: #fff; padding: 14px 32px; border-radius: 999px; text-decoration: none; font-weight: bold; font-size: 1rem; display: inline-block; box-shadow: 0 2px 8px #a78bfa33; transition: filter 0.2s; letter-spacing: 0.5px;">
-                Activate ${entityLabel}
+                 style="background: ${buttonGradient}; color: #fff; padding: 14px 32px; border-radius: 999px; text-decoration: none; font-weight: bold;">
+                 Activate ${entityLabel}
               </a>
             </div>
-            <p style="color: #6b7280; font-size: 0.95rem;">If you did not create a ${entityLabelLower}, you can safely ignore this email.</p>
+            <p>If you did not create a ${entityLabelLower}, you can safely ignore this email.</p>
           </div>
-          <div style="background: #f3f4f6; padding: 16px; text-align: center; color: #9ca3af; font-size: 0.9rem;">
-            &copy; ${new Date().getFullYear()} The Smart Cart. All rights reserved worldwide.
+          <div style="background: #f3f4f6; padding: 16px; text-align: center; font-size: 0.9rem; color: #9ca3af;">
+            &copy; ${new Date().getFullYear()} The Smart Cart. All rights reserved.
           </div>
         </div>
       </div>
     `;
   } else {
-    html = `
-      <div style="font-family: Arial, sans-serif; background: #f9fafb; padding: 40px 0;">
-        <div style="max-width: 480px; margin: auto; background: #fff; border-radius: 12px; box-shadow: 0 2px 12px #0001; overflow: hidden;">
-          <div style="background: ${mainGradient}; padding: 28px 0; text-align: center;">
-            <h1 style="color: #fff; margin: 0; font-size: 2rem; letter-spacing: 1px;">The Smart Cart</h1>
-          </div>
-          <div style="padding: 32px;">
-            <p style="color: #374151; font-size: 1rem;">${options.message}</p>
-            ${
-              options.buttonUrl
-                ? `<div style="text-align: center; margin: 32px 0;">
-                    <a href="${options.buttonUrl}"
-                       style="background: ${buttonGradient}; color: #fff; padding: 14px 32px; border-radius: 999px; text-decoration: none; font-weight: bold; font-size: 1rem; display: inline-block; box-shadow: 0 2px 8px #a78bfa33; transition: filter 0.2s; letter-spacing: 0.5px;">
-                       ${options.buttonText || 'View Details'}
-                    </a>
-                   </div>`
-                : ''
-            }
-          </div>
-          <div style="background: #f3f4f6; padding: 16px; text-align: center; color: #9ca3af; font-size: 0.9rem;">
-            &copy; ${new Date().getFullYear()} The Smart Cart. All rights reserved worldwide.
-          </div>
-        </div>
-      </div>
-    `;
+    html = options.html || `<p>${options.message}</p>`;
   }
 
-  const mailOptions = {
-    from: process.env.BREVO_FROM_EMAIL,
-    to: options.email,
-    subject: options.subject,
-    text: options.message || options.text,
-    html,
+  const emailData = new SibApiV3Sdk.SendSmtpEmail();
+  emailData.sender = {
+    email: process.env.BREVO_FROM_EMAIL,
+    name: process.env.BREVO_FROM_NAME || 'Your App',
   };
+  emailData.to = [{ email: options.email }];
+  emailData.subject = options.subject;
+  emailData.htmlContent = html;
 
-  await transporter.sendMail(mailOptions);
-};
+  try {
+    const result = await tranEmailApi.sendTransacEmail(emailData);
+    console.log('✅ Email sent:', result.messageId || result);
+    return result;
+  } catch (error) {
+    console.error('❌ Email failed:', error.response?.text || error.message);
+    throw new Error('Email sending failed');
+  }
+}
 
 module.exports = sendMail;

@@ -42,33 +42,30 @@ exports.registerUser = catchAsyncErrors(async (req, res, next) => {
     }
 
     const user = {
-      name: name,
-      email: email,
-      password: password,
+      name,
+      email,
+      password,
       avatar: avatarObj,
     };
 
     const activationToken = createActivationToken(user);
     const activationUrl = `${process.env.FRONTEND_URL}/user/activation/${activationToken}`;
 
-    try {
-      await sendMail({
-        email: user.email,
-        subject: 'Activate your account',
-        name: user.name,
-        activationUrl,
-        message: `Hello ${user.name}, please click on the link to activate your account: ${activationUrl}`,
-      });
-      res.status(201).json({
-        success: true,
-        message: `Please check your email:- ${user.email} to activate your account!`,
-      });
-    } catch (error) {
-      return next(new errorHandler(error.message), 500);
-    }
+    await sendMail({
+      email: user.email,
+      subject: 'Activate your account',
+      name: user.name,
+      activationUrl,
+      message: `Hello ${user.name}, please click on the link to activate your account: ${activationUrl}`,
+    });
+
+    res.status(201).json({
+      success: true,
+      message: `Please check your email: ${user.email} to activate your account!`,
+    });
   } catch (error) {
-    console.log(error);
-    return next(new errorHandler(error.message), 400);
+    console.log('❌ Register error:', error);
+    return next(new errorHandler(error.message, 500));
   }
 });
 
