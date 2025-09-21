@@ -86,7 +86,7 @@ const UserRegister = () => {
                 htmlFor='name'
                 className='block text-base font-semibold text-gray-800 mb-1'
               >
-                Name <span className='text-blue-600'>*</span>
+                Name <span className='text-orange-600'>*</span>
               </label>
               <input
                 type='text'
@@ -94,8 +94,8 @@ const UserRegister = () => {
                 required
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                placeholder='Name'
-                className='block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm placeholder-gray-500 focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-lg'
+                placeholder='abdulahad'
+                className='block w-full px-4 py-2 border border-gray-300 rounded-sm shadow-sm placeholder-gray-500 focus:outline-none focus:ring-orange-500 focus:border-orange-500 text-lg'
               />
             </div>
 
@@ -104,16 +104,16 @@ const UserRegister = () => {
                 htmlFor='email'
                 className='block text-base font-semibold text-gray-800 mb-1'
               >
-                Email <span className='text-blue-600'>*</span>
+                Email <span className='text-orange-600'>*</span>
               </label>
               <input
                 type='email'
                 name='email'
                 required
-                placeholder='abc@gmail.com'
+                placeholder='abdulahad@gmail.com'
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className='block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm placeholder-gray-500 focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-lg'
+                className='block w-full px-4 py-2 border border-gray-300 rounded-sm shadow-sm placeholder-gray-500 focus:outline-none focus:ring-orange-500 focus:border-orange-500 text-lg'
               />
             </div>
 
@@ -122,7 +122,7 @@ const UserRegister = () => {
                 htmlFor='password'
                 className='block text-base font-semibold text-gray-800 mb-1'
               >
-                Password <span className='text-blue-600'>*</span>
+                Password <span className='text-orange-600'>*</span>
               </label>
               <div className='relative'>
                 <input
@@ -132,7 +132,7 @@ const UserRegister = () => {
                   placeholder='•••••••'
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className='block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm placeholder-gray-500 focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-lg'
+                  className='block w-full px-4 py-2 border border-gray-300 rounded-sm shadow-sm placeholder-gray-500 focus:outline-none focus:ring-orange-500 focus:border-orange-500 text-lg'
                 />
                 {visible ? (
                   <AiOutlineEye
@@ -172,7 +172,7 @@ const UserRegister = () => {
                 </span>
                 <label
                   htmlFor='file-input'
-                  className='ml-5 flex items-center justify-center px-4 py-2 border border-gray-300 rounded-lg shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50'
+                  className='ml-5 flex items-center justify-center px-4 py-2 border border-gray-300 rounded-sm shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50'
                 >
                   <span>Upload a file</span>
                   <input
@@ -190,7 +190,7 @@ const UserRegister = () => {
             <div>
               <button
                 type='submit'
-                className={`w-full py-2 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 hover:text-gray-100 text-white rounded-lg font-semibold tracking-wide transition flex items-center justify-center`}
+                className={`w-full py-2 bg-orange-500 hover:bg-gray-800 text-white rounded-sm font-semibold tracking-wide transition flex items-center justify-center`}
               >
                 Submit
               </button>
@@ -199,7 +199,7 @@ const UserRegister = () => {
             <div className='flex gap-4 mt-4'>
               <Link
                 to='/user/login'
-                className='w-full py-2 bg-gray-200 text-black text-base text-center rounded-lg font-semibold hover:bg-gray-300 transition'
+                className='w-full py-2 bg-gray-300 text-black text-base text-center rounded-sm font-semibold hover:bg-gray-800 hover:text-white transition'
               >
                 Already have an account?
               </Link>
