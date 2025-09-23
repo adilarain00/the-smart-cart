@@ -76,14 +76,6 @@ app.use('/api/visitors', visitorRoutes);
 // Global error handler
 app.use(errorHandler);
 
-// Start the server
-const server = app.listen(process.env.PORT, () => {
-  console.log(
-    `Server is running on http://localhost:${process.env.PORT}`.magenta.bold
-      .underline
-  );
-});
-
 // Handle unhandled promise rejections
 process.on('unhandledRejection', (err) => {
   console.log(
