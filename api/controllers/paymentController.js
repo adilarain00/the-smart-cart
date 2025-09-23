@@ -8,7 +8,7 @@ exports.processPayment = catchAsyncErrors(async (req, res, next) => {
     amount: req.body.amount,
     currency: 'usd',
     metadata: {
-      company: 'Buyno Ecommerce',
+      company: 'The Smart Cart',
     },
   });
 
