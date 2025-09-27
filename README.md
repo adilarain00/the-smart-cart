@@ -16,7 +16,7 @@ From intuitive store management to real-time vendor communication and smooth che
   </a>
 
   <!-- ▶️ Live Demo (YouTube) -->
-  <a href="#" target="_blank">
+  <a href="https://www.youtube.com/watch?v=LEikMPo9M3A" target="_blank">
     <img src="https://img.shields.io/badge/Live_Demo-FF0000?style=for-the-badge&logo=youtube&logoColor=white" />
   </a>
 
@@ -26,12 +26,12 @@ From intuitive store management to real-time vendor communication and smooth che
   </a>
 
   <!-- 📝 Case Study (Portfolio) -->
-  <a href="#" target="_blank">
+  <a href="https://aadil-amjad.me/project/the-smart-cart" target="_blank">
     <img src="https://img.shields.io/badge/📝 Case_Study-4CAF50?style=for-the-badge&logo=&logoColor=white" />
   </a>
 
   <!-- ✍️ Blog (Portfolio) -->
-  <a href="#" target="_blank">
+  <a href="https://aadil-amjad.me/blog/the-smart-cart" target="_blank">
     <img src="https://img.shields.io/badge/Blog-FF9800?style=for-the-badge&logo=googlescholar&logoColor=white" />
   </a>
 
@@ -129,7 +129,7 @@ The **Smart Cart** is a scalable multivendor e-commerce platform that unites sec
 ## Contact
 
 <p align="center">
-  <a href="#" target="_blank">
+  <a href="https://aadil-amjad.me" target="_blank">
     <img src="https://img.shields.io/badge/Portfolio-black?style=for-the-badge&logo=firefox&logoColor=white" />
   </a>
   <a href="https://www.linkedin.com/in/adilarain00" target="_blank">
