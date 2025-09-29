@@ -36,7 +36,7 @@ From intuitive store management to real-time vendor communication and smooth che
   </a>
 
   <!-- 🔗 LinkedIn Post -->
-  <a href="#" target="_blank">
+  <a href="https://www.linkedin.com/posts/adilarain00_mern-fullstackdevelopment-ecommerce-activity-7378328560085819392-y1ci?utm_source=share&utm_medium=member_desktop&rcm=ACoAAE9gbZABjWJQao04XHSlnY-6-rfc8s4LNrc" target="_blank">
     <img src="https://img.shields.io/badge/🔗 LinkedIn_Post-0A66C2?style=for-the-badge&logo=&logoColor=white" />
   </a>
 </p>
